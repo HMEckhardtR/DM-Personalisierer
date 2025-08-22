@@ -125,13 +125,26 @@ export default function Home() {
     setCurrentIndex(prev => Math.max(prev - 1, 0));
   };
 
-  const handleCopy = () => {
+  const handleCopyMessage = () => {
     if(generatedMessage) {
       navigator.clipboard.writeText(generatedMessage);
       toast({
         title: 'Copied to Clipboard!',
         description: 'The personalized message is ready to be pasted.',
       });
+    }
+  };
+
+  const handleCopyUser = () => {
+    if (csvData.length > 0) {
+      const currentUser = csvData[currentIndex];
+      if (currentUser) {
+        navigator.clipboard.writeText(currentUser);
+        toast({
+          title: 'Copied to Clipboard!',
+          description: `Copied "${currentUser}" to clipboard.`,
+        });
+      }
     }
   };
 
@@ -194,10 +207,13 @@ export default function Home() {
               <div className="space-y-6">
                 <Card className="bg-muted/30">
                   <CardHeader>
-                    <CardDescription>
+                    <CardDescription className="flex items-center gap-2">
                       Showing message for:{' '}
                       <span className="font-semibold text-primary">{csvData[currentIndex]}</span>
-                      <span className="text-muted-foreground ml-2">({currentIndex + 1}/{csvData.length})</span>
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCopyUser}>
+                        <Copy className="h-4 w-4"/>
+                      </Button>
+                      <span className="text-muted-foreground ml-auto">({currentIndex + 1}/{csvData.length})</span>
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -216,7 +232,7 @@ export default function Home() {
                         <ArrowRight />
                       </Button>
                     </div>
-                    <Button onClick={handleCopy} disabled={!generatedMessage}>
+                    <Button onClick={handleCopyMessage} disabled={!generatedMessage}>
                       <Copy />
                       Copy Message
                     </Button>
