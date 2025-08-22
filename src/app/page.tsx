@@ -226,11 +226,11 @@ export default function Home() {
                   </CardContent>
                   <CardFooter className="flex justify-between items-center">
                     <div className="flex gap-2">
-                       <Button onClick={handlePrevious} disabled={currentIndex === 0} variant="secondary">
+                       <Button onClick={handlePrevious} disabled={currentIndex === 0} variant="secondary" className="btn-nav-hover border-2 border-transparent">
                         <ArrowLeft />
                         Previous
                       </Button>
-                      <Button onClick={handleNext} disabled={currentIndex === csvData.length - 1} variant="secondary">
+                      <Button onClick={handleNext} disabled={currentIndex === csvData.length - 1} variant="secondary" className="btn-nav-hover border-2 border-transparent">
                         Next
                         <ArrowRight />
                       </Button>

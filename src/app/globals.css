@@ -82,3 +82,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .btn-nav-hover {
+    @apply hover:border-2 hover:border-[#a7ea31];
+  }
+}
