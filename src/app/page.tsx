@@ -75,13 +75,14 @@ export default function Home() {
           const json: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
           
           allRows = json
+            .slice(1) // Start from the second row (A2)
             .map(row => String(row[0] || ''))
             .filter(value => value.trim() !== '');
 
           if (allRows.length === 0) {
             toast({
-              title: 'Empty File',
-              description: 'The uploaded file is empty or could not be parsed.',
+              title: 'Empty File or No Data',
+              description: 'The file is empty or data starts after A2. Please check your file.',
               variant: 'destructive',
             });
             return;
