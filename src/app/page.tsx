@@ -91,6 +91,7 @@ export default function Home() {
           setFileName(file.name);
           setCurrentIndex(0);
           toast({
+            variant: 'custom',
             title: 'File Uploaded Successfully',
             description: `${firstColumnData.length} users found in ${file.name}.`,
           });
@@ -129,6 +130,7 @@ export default function Home() {
     if(generatedMessage) {
       navigator.clipboard.writeText(generatedMessage);
       toast({
+        variant: 'custom',
         title: 'Copied to Clipboard!',
         description: 'The personalized message is ready to be pasted.',
       });
@@ -141,6 +143,7 @@ export default function Home() {
       if (currentUser) {
         navigator.clipboard.writeText(currentUser);
         toast({
+          variant: 'custom',
           title: 'Copied to Clipboard!',
           description: `Copied "${currentUser}" to clipboard.`,
         });
