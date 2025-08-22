@@ -200,11 +200,11 @@ export default function Home() {
               />
             </div>
              <div className="flex gap-2">
-               <Button onClick={handleSaveTemplate} variant="secondary" className="w-full">
+               <Button onClick={handleSaveTemplate} variant="outline" className="w-full btn-nav-hover border-2 border-transparent">
                  <Save className="mr-2 h-4 w-4" /> Save as New
                </Button>
                <Select onValueChange={handleTemplateChange}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full btn-nav-hover border-2 border-transparent">
                   <SelectValue placeholder="Load a Template" />
                 </SelectTrigger>
                 <SelectContent>
