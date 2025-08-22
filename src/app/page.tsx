@@ -235,7 +235,7 @@ export default function Home() {
                         <ArrowRight />
                       </Button>
                     </div>
-                    <Button onClick={handleCopyMessage} disabled={!generatedMessage}>
+                    <Button onClick={handleCopyMessage} disabled={!generatedMessage} className="btn-copy-hover border-2 border-transparent">
                       <Copy />
                       Copy Message
                     </Button>

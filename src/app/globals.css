@@ -87,4 +87,7 @@
   .btn-nav-hover {
     @apply hover:border-2 hover:border-[#a7ea31];
   }
+  .btn-copy-hover {
+    @apply hover:border-2 hover:border-[#191919];
+  }
 }
