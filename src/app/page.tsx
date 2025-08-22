@@ -68,7 +68,7 @@ export default function Home() {
         
         try {
           if (isXlsx) {
-            const workbook = XLSX.read(data, { type: 'binary' });
+            const workbook = XLSX.read(data, { type: 'array' });
             const sheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[sheetName];
             const json: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
@@ -108,9 +108,9 @@ export default function Home() {
       };
 
       if (isXlsx) {
-        reader.readAsBinaryString(file);
+        reader.readAsArrayBuffer(file);
       } else {
-        reader.readAsText(file);
+        reader.readAsText(file, 'UTF-8');
       }
     }
   };
@@ -157,7 +157,7 @@ export default function Home() {
           description: 'Your message template has been loaded.',
         });
       };
-      reader.readAsText(file);
+      reader.readAsText(file, 'UTF-8');
     } else {
       toast({
         title: 'Invalid File Type',
