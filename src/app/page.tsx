@@ -14,10 +14,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, ArrowLeft, ArrowRight, Copy, FileText, Save, FolderOpen } from 'lucide-react';
+import { Upload, ArrowLeft, ArrowRight, Copy, FileText, Save } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { templates } from '@/templates';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
+
 
 export default function Home() {
   const [baseMessage, setBaseMessage] = useState('Hi @user, thanks so much for your support! I really appreciate it.');
@@ -27,6 +29,8 @@ export default function Home() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [generatedMessage, setGeneratedMessage] = useState('');
   const [manualUser, setManualUser] = useState('');
+  const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
+  const [newTemplateName, setNewTemplateName] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -58,7 +62,6 @@ export default function Home() {
           const workbook = XLSX.read(data, { type: 'binary' });
           const sheetName = workbook.SheetNames[0];
           const worksheet = workbook.Sheets[sheetName];
-          // sheet_to_json will handle CSV/XLSX parsing and encoding issues.
           const json: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
           
           allRows = json
@@ -76,7 +79,6 @@ export default function Home() {
 
           setCsvData(allRows);
           setFileName(file.name);
-          // Start at index 1 if there's more than one row, otherwise start at 0.
           setCurrentIndex(allRows.length > 1 ? 1 : 0);
           setManualUser('');
           toast({
@@ -94,12 +96,11 @@ export default function Home() {
           });
         }
       };
-      // Use readAsArrayBuffer for better compatibility with xlsx library
       reader.readAsArrayBuffer(file);
     }
   };
   
-  const handleSaveTemplate = () => {
+  const handleOpenSaveDialog = () => {
     if (!baseMessage.trim()) {
       toast({
         title: 'Empty Message',
@@ -108,11 +109,16 @@ export default function Home() {
       });
       return;
     }
+    setIsSaveDialogOpen(true);
+  };
+  
+  const handleConfirmSave = () => {
+    const templateName = newTemplateName.trim() || 'patreon-dm-template';
     const blob = new Blob([baseMessage], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'patreon-dm-template.txt';
+    link.download = `${templateName}.txt`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -120,8 +126,10 @@ export default function Home() {
     toast({
       variant: 'custom',
       title: 'Template Saved',
-      description: 'Your message template has been saved as a .txt file.',
+      description: `Your message template has been saved as ${templateName}.txt.`,
     });
+    setNewTemplateName('');
+    setIsSaveDialogOpen(false);
   };
 
   const handleTemplateChange = (templateName: string) => {
@@ -135,7 +143,6 @@ export default function Home() {
       });
     }
   };
-
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -179,131 +186,168 @@ export default function Home() {
   const isManualMode = !!manualUser.trim();
 
   return (
-    <main className="container mx-auto p-4 md:p-8">
-      <Card className="max-w-5xl mx-auto shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-3xl font-headline tracking-tight">Patreon DM Generator</CardTitle>
-          <CardDescription>
-            Easily generate personalized direct messages for your patrons from a CSV or XLSX file.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="flex flex-col gap-6">
-            <h3 className="text-xl font-semibold text-foreground/90 border-b pb-2">1. Configure Your Message</h3>
-            <div className="space-y-2">
-              <Label htmlFor="base-message">Message Template</Label>
-              <Textarea
-                id="base-message"
-                value={baseMessage}
-                onChange={(e) => setBaseMessage(e.target.value)}
-                placeholder="Enter your base message here..."
-                rows={5}
-                className="resize-none"
-              />
-            </div>
-             <div className="flex gap-2">
-               <Button onClick={handleSaveTemplate} variant="outline" className="w-full btn-nav-hover border-2 border-transparent">
-                 <Save className="mr-2 h-4 w-4" /> Save as New
-               </Button>
-               <Select onValueChange={handleTemplateChange}>
-                <SelectTrigger className="w-full btn-nav-hover border-2 border-transparent">
-                  <SelectValue placeholder="Load a Template" />
-                </SelectTrigger>
-                <SelectContent>
-                  {templates.map(template => (
-                    <SelectItem key={template.name} value={template.name}>{template.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-             </div>
-            <div className="space-y-2">
-              <Label htmlFor="keyword">Placeholder Keyword</Label>
-              <Input
-                id="keyword"
-                value={keyword}
-                onChange={(e) => setKeyword(e.target.value)}
-                placeholder="e.g. @user"
-              />
-            </div>
-             <div className="space-y-3">
-              <Label>Upload Patrons List</Label>
-               <input
-                 type="file"
-                 ref={fileInputRef}
-                 onChange={handleFileChange}
-                 accept=".csv,.xlsx"
-                 className="hidden"
-               />
-               <Button onClick={handleUploadClick} variant="outline" className="w-full btn-nav-hover border-2 border-transparent">
-                 <Upload className="mr-2 h-4 w-4" />
-                 Upload .csv or .xlsx File
-               </Button>
-                {fileName && (
-                  <div className="text-sm text-muted-foreground flex items-center justify-center p-2 bg-muted/50 rounded-md">
-                    <FileText className="mr-2 h-4 w-4 shrink-0" />
-                    <span className="truncate">{fileName}</span>
-                  </div>
-                )}
-             </div>
-          </div>
-          <div className="flex flex-col gap-6">
-             <h3 className="text-xl font-semibold text-foreground/90 border-b pb-2">2. Generate & Copy</h3>
-            <div className="space-y-2">
-              <Label htmlFor="manual-user">Manual Input (Overrides List)</Label>
-              <Input
-                id="manual-user"
-                value={manualUser}
-                onChange={(e) => setManualUser(e.target.value)}
-                placeholder="Type a name to generate a one-off message..."
-              />
-            </div>
-            {csvData.length > 0 || isManualMode ? (
-              <div className="space-y-6">
-                <Card className="bg-muted/30">
-                  <CardHeader>
-                    <CardDescription className="flex items-center gap-2">
-                      Showing message for:{' '}
-                      <span className="font-semibold text-primary bg-[#191919] rounded-md px-2 py-1">{displayUser}</span>
-                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCopyUser}>
-                        <Copy className="h-4 w-4"/>
-                      </Button>
-                      {!isManualMode && csvData.length > 0 && (
-                        <span className="text-muted-foreground ml-auto">({currentIndex + 1}/{csvData.length})</span>
-                      )}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="p-4 rounded-md bg-background min-h-[120px] text-sm whitespace-pre-wrap">
-                      {generatedMessage}
-                    </div>
-                  </CardContent>
-                  <CardFooter className="flex justify-between items-center">
-                    <div className="flex gap-2">
-                       <Button onClick={handlePrevious} disabled={currentIndex === 0 || isManualMode} variant="secondary" className="btn-nav-hover border-2 border-transparent">
-                        <ArrowLeft />
-                        Previous
-                      </Button>
-                      <Button onClick={handleNext} disabled={currentIndex === csvData.length - 1 || isManualMode} variant="secondary" className="btn-nav-hover border-2 border-transparent">
-                        Next
-                        <ArrowRight />
-                      </Button>
-                    </div>
-                    <Button onClick={handleCopyMessage} disabled={!generatedMessage} className="btn-copy-hover border-2 border-transparent">
-                      <Copy />
-                      Copy Message
-                    </Button>
-                  </CardFooter>
-                </Card>
+    <>
+      <main className="container mx-auto p-4 md:p-8">
+        <Card className="max-w-5xl mx-auto shadow-lg">
+          <CardHeader>
+            <CardTitle className="text-3xl font-headline tracking-tight">Patreon DM Generator</CardTitle>
+            <CardDescription>
+              Easily generate personalized direct messages for your patrons from a CSV or XLSX file.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="flex flex-col gap-6">
+              <h3 className="text-xl font-semibold text-foreground/90 border-b pb-2">1. Configure Your Message</h3>
+              <div className="space-y-2">
+                <Label htmlFor="base-message">Message Template</Label>
+                <Textarea
+                  id="base-message"
+                  value={baseMessage}
+                  onChange={(e) => setBaseMessage(e.target.value)}
+                  placeholder="Enter your base message here..."
+                  rows={5}
+                  className="resize-none"
+                />
               </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg h-full">
-                <p className="text-muted-foreground">Your generated message will appear here.</p>
-                <p className="text-sm text-muted-foreground/80 mt-2">Upload a CSV or XLSX file, or use the manual input above.</p>
+               <div className="flex gap-2">
+                 <Button onClick={handleOpenSaveDialog} variant="outline" className="w-full btn-nav-hover border-2 border-transparent">
+                   <Save className="mr-2 h-4 w-4" /> Save as New
+                 </Button>
+                 <Select onValueChange={handleTemplateChange}>
+                  <SelectTrigger className="w-full btn-nav-hover border-2 border-transparent">
+                    <SelectValue placeholder="Load a Template" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {templates.map(template => (
+                      <SelectItem key={template.name} value={template.name}>{template.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+               </div>
+              <div className="space-y-2">
+                <Label htmlFor="keyword">Placeholder Keyword</Label>
+                <Input
+                  id="keyword"
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                  placeholder="e.g. @user"
+                />
               </div>
-            )}
+               <div className="space-y-3">
+                <Label>Upload Patrons List</Label>
+                 <input
+                   type="file"
+                   ref={fileInputRef}
+                   onChange={handleFileChange}
+                   accept=".csv,.xlsx"
+                   className="hidden"
+                 />
+                 <Button onClick={handleUploadClick} variant="outline" className="w-full btn-nav-hover border-2 border-transparent">
+                   <Upload className="mr-2 h-4 w-4" />
+                   Upload .csv or .xlsx File
+                 </Button>
+                  {fileName && (
+                    <div className="text-sm text-muted-foreground flex items-center justify-center p-2 bg-muted/50 rounded-md">
+                      <FileText className="mr-2 h-4 w-4 shrink-0" />
+                      <span className="truncate">{fileName}</span>
+                    </div>
+                  )}
+               </div>
+            </div>
+            <div className="flex flex-col gap-6">
+               <h3 className="text-xl font-semibold text-foreground/90 border-b pb-2">2. Generate & Copy</h3>
+              <div className="space-y-2">
+                <Label htmlFor="manual-user">Manual Input (Overrides List)</Label>
+                <Input
+                  id="manual-user"
+                  value={manualUser}
+                  onChange={(e) => setManualUser(e.target.value)}
+                  placeholder="Type a name to generate a one-off message..."
+                />
+              </div>
+              {csvData.length > 0 || isManualMode ? (
+                <div className="space-y-6">
+                  <Card className="bg-muted/30">
+                    <CardHeader>
+                      <CardDescription className="flex items-center gap-2">
+                        Showing message for:{' '}
+                        <span className="font-semibold text-primary bg-[#191919] rounded-md px-2 py-1">{displayUser}</span>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCopyUser}>
+                          <Copy className="h-4 w-4"/>
+                        </Button>
+                        {!isManualMode && csvData.length > 0 && (
+                          <span className="text-muted-foreground ml-auto">({currentIndex + 1}/{csvData.length})</span>
+                        )}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="p-4 rounded-md bg-background min-h-[120px] text-sm whitespace-pre-wrap">
+                        {generatedMessage}
+                      </div>
+                    </CardContent>
+                    <CardFooter className="flex justify-between items-center">
+                      <div className="flex gap-2">
+                         <Button onClick={handlePrevious} disabled={currentIndex === 0 || isManualMode} variant="secondary" className="btn-nav-hover border-2 border-transparent">
+                          <ArrowLeft />
+                          Previous
+                        </Button>
+                        <Button onClick={handleNext} disabled={currentIndex === csvData.length - 1 || isManualMode} variant="secondary" className="btn-nav-hover border-2 border-transparent">
+                          Next
+                          <ArrowRight />
+                        </Button>
+                      </div>
+                      <Button onClick={handleCopyMessage} disabled={!generatedMessage} className="btn-copy-hover border-2 border-transparent">
+                        <Copy />
+                        Copy Message
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg h-full">
+                  <p className="text-muted-foreground">Your generated message will appear here.</p>
+                  <p className="text-sm text-muted-foreground/80 mt-2">Upload a CSV or XLSX file, or use the manual input above.</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </main>
+
+      <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Save Template</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="template-name" className="text-right">
+                Name
+              </Label>
+              <Input
+                id="template-name"
+                value={newTemplateName}
+                onChange={(e) => setNewTemplateName(e.target.value)}
+                maxLength={13}
+                className="col-span-3"
+                placeholder="My Awesome Template"
+              />
+            </div>
           </div>
-        </CardContent>
-      </Card>
-    </main>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button type="button" variant="secondary">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button type="submit" onClick={handleConfirmSave}>
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
+
+    

@@ -1,23 +1,31 @@
-const formal = `Dear @user,
+const formal = `Hi @user!
+This is the password for the winrar of "The Temple of Doom - Part-1"
 
-Thank you for your continued support of my work. It is greatly appreciated, and it's because of patrons like you that I can continue to create.
+8ec3505f-0d67-414d-9773-b1743809a1f9
 
-I hope you enjoy the latest content!
-
-All the best,
+The post with the link will be published tomorrow at 9am CET.
+I hope you love it!
 `;
 
-const friendly = `Hey @user!
+const WithOutLink = `Hi @user!
+This is the password to unzip the WinRAR file for “The Box 5 - Intro.”
 
-Just wanted to send a quick message to say a huge thanks for being a patron. You're awesome! Your support means the world to me.
+818298e6-3dfd-4bbe-bd5e-866239570a6d
 
-Cheers,
+have FUN!
 `;
 
-const short = `Hi @user, thanks so much for your support! I really appreciate it.`;
+const Backup21 = `Welcome @user!!
+This is the password for Backup v2.1
+
+a3c116ad-14bc-45e6-a664-e1467e472ddd
+
+Link: https://www.patreon.com/posts/backup-v2-102723291
+
+If you have already downloaded the other 3 Backup files, The Mansion 48 and ToE2-4 111, you don't really need to download it.`;
 
 export const templates = [
     { name: 'Formal', content: formal },
-    { name: 'Friendly', content: friendly },
-    { name: 'Short & Sweet', content: short },
+    { name: 'With Out Link', content: WithOutLink },
+    { name: 'Backup21', content: Backup21 },
 ];
