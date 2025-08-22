@@ -16,6 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, ArrowLeft, ArrowRight, Copy, FileText } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import * as XLSX from 'xlsx';
 
 export default function Home() {
   const [baseMessage, setBaseMessage] = useState('Hi @user, thanks so much for your support! I really appreciate it.');
@@ -47,10 +48,13 @@ export default function Home() {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
+      const isCsv = file.type === 'text/csv' || file.name.endsWith('.csv');
+      const isXlsx = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || file.name.endsWith('.xlsx');
+
+      if (!isCsv && !isXlsx) {
         toast({
           title: 'Invalid File Type',
-          description: 'Please upload a .csv file.',
+          description: 'Please upload a .csv or .xlsx file.',
           variant: 'destructive',
         });
         return;
@@ -58,28 +62,54 @@ export default function Home() {
 
       const reader = new FileReader();
       reader.onload = (e) => {
-        const text = e.target?.result as string;
-        const rows = text.split('\n').filter(row => row.trim() !== '');
-        const firstColumnData = rows.map(row => row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)[0].trim().replace(/^"|"$/g, '')).filter(Boolean);
+        const data = e.target?.result;
+        let firstColumnData: string[] = [];
         
-        if(firstColumnData.length === 0) {
+        try {
+          if (isXlsx) {
+            const workbook = XLSX.read(data, { type: 'binary' });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const json: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+            firstColumnData = json.map(row => row[0]).filter(String);
+          } else { // CSV
+            const text = data as string;
+            const rows = text.split('\n').filter(row => row.trim() !== '');
+            firstColumnData = rows.map(row => row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)[0].trim().replace(/^"|"$/g, '')).filter(Boolean);
+          }
+
+          if (firstColumnData.length === 0) {
+            toast({
+              title: 'Empty or Invalid File',
+              description: 'The file is empty or could not be parsed. Please ensure it has content in the first column.',
+              variant: 'destructive',
+            });
+            return;
+          }
+
+          setCsvData(firstColumnData);
+          setFileName(file.name);
+          setCurrentIndex(0);
           toast({
-            title: 'Empty or Invalid CSV',
-            description: 'The CSV file is empty or could not be parsed. Please ensure it has content in the first column.',
+            title: 'File Uploaded Successfully',
+            description: `${firstColumnData.length} users found in ${file.name}.`,
+          });
+
+        } catch (error) {
+          console.error("Error parsing file:", error);
+          toast({
+            title: 'File Parsing Error',
+            description: 'There was an error parsing your file. Please check the file format and try again.',
             variant: 'destructive',
           });
-          return;
         }
-        
-        setCsvData(firstColumnData);
-        setFileName(file.name);
-        setCurrentIndex(0);
-        toast({
-          title: 'File Uploaded Successfully',
-          description: `${firstColumnData.length} users found in ${file.name}.`,
-        });
       };
-      reader.readAsText(file);
+
+      if (isXlsx) {
+        reader.readAsBinaryString(file);
+      } else {
+        reader.readAsText(file);
+      }
     }
   };
 
@@ -111,7 +141,7 @@ export default function Home() {
         <CardHeader>
           <CardTitle className="text-3xl font-headline tracking-tight">Patreon DM Generator</CardTitle>
           <CardDescription>
-            Easily generate personalized direct messages for your patrons from a CSV file.
+            Easily generate personalized direct messages for your patrons from a CSV or XLSX file.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -143,12 +173,12 @@ export default function Home() {
                  type="file"
                  ref={fileInputRef}
                  onChange={handleFileChange}
-                 accept=".csv"
+                 accept=".csv,.xlsx,.xls"
                  className="hidden"
                />
                <Button onClick={handleUploadClick} variant="outline" className="w-full">
                  <Upload className="mr-2 h-4 w-4" />
-                 Upload .csv File
+                 Upload .csv or .xlsx File
                </Button>
                 {fileName && (
                   <div className="text-sm text-muted-foreground flex items-center justify-center p-2 bg-muted/50 rounded-md">
@@ -196,7 +226,7 @@ export default function Home() {
             ) : (
               <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg h-full">
                 <p className="text-muted-foreground">Your generated message will appear here.</p>
-                <p className="text-sm text-muted-foreground/80 mt-2">Upload a CSV file to get started.</p>
+                <p className="text-sm text-muted-foreground/80 mt-2">Upload a CSV or XLSX file to get started.</p>
               </div>
             )}
           </div>
