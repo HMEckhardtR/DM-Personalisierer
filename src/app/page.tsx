@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, ArrowLeft, ArrowRight, Copy, FileText } from 'lucide-react';
+import { Upload, ArrowLeft, ArrowRight, Copy, FileText, Save, FolderOpen } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import * as XLSX from 'xlsx';
 
@@ -26,6 +26,7 @@ export default function Home() {
   const [fileName, setFileName] = useState<string | null>(null);
   const [generatedMessage, setGeneratedMessage] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const templateInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const generateMessage = useCallback(() => {
@@ -113,6 +114,58 @@ export default function Home() {
       }
     }
   };
+  
+  const handleSaveTemplate = () => {
+    if (!baseMessage.trim()) {
+      toast({
+        title: 'Empty Message',
+        description: 'Cannot save an empty message template.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    const blob = new Blob([baseMessage], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'patreon-dm-template.txt';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    toast({
+      variant: 'custom',
+      title: 'Template Saved',
+      description: 'Your message template has been saved as a .txt file.',
+    });
+  };
+
+  const handleLoadTemplateClick = () => {
+    templateInputRef.current?.click();
+  };
+  
+  const handleTemplateFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.name.endsWith('.txt')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target?.result as string;
+        setBaseMessage(content);
+        toast({
+          variant: 'custom',
+          title: 'Template Loaded',
+          description: 'Your message template has been loaded.',
+        });
+      };
+      reader.readAsText(file);
+    } else {
+      toast({
+        title: 'Invalid File Type',
+        description: 'Please upload a .txt file.',
+        variant: 'destructive',
+      });
+    }
+  };
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -174,6 +227,21 @@ export default function Home() {
                 className="resize-none"
               />
             </div>
+             <div className="flex gap-2">
+               <input
+                 type="file"
+                 ref={templateInputRef}
+                 onChange={handleTemplateFileChange}
+                 accept=".txt"
+                 className="hidden"
+               />
+               <Button onClick={handleSaveTemplate} variant="secondary" className="w-full">
+                 <Save className="mr-2 h-4 w-4" /> Save Template
+               </Button>
+               <Button onClick={handleLoadTemplateClick} variant="secondary" className="w-full">
+                 <FolderOpen className="mr-2 h-4 w-4" /> Load Template
+               </Button>
+             </div>
             <div className="space-y-2">
               <Label htmlFor="keyword">Placeholder Keyword</Label>
               <Input
