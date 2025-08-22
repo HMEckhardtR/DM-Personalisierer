@@ -72,9 +72,13 @@ export default function Home() {
             const sheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[sheetName];
             const json: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-            firstColumnData = json.map(row => row[0]).filter(String);
+            firstColumnData = json.map(row => String(row[0])).filter(String);
           } else { // CSV
-            const text = data as string;
+            let text = data as string;
+            // Handle UTF-8 BOM
+            if (text.charCodeAt(0) === 0xFEFF) {
+              text = text.substring(1);
+            }
             const rows = text.split('\n').filter(row => row.trim() !== '');
             firstColumnData = rows.map(row => row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)[0].trim().replace(/^"|"$/g, '')).filter(Boolean);
           }
@@ -257,7 +261,7 @@ export default function Home() {
                  type="file"
                  ref={fileInputRef}
                  onChange={handleFileChange}
-                 accept=".csv,.xlsx,.xls"
+                 accept=".csv,.xlsx"
                  className="hidden"
                />
                <Button onClick={handleUploadClick} variant="outline" className="w-full btn-nav-hover border-2 border-transparent">
