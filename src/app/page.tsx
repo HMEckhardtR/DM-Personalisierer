@@ -16,6 +16,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, ArrowLeft, ArrowRight, Copy, FileText, Save, FolderOpen } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { templates } from '@/templates';
 
 export default function Home() {
   const [baseMessage, setBaseMessage] = useState('Hi @user, thanks so much for your support! I really appreciate it.');
@@ -26,7 +28,6 @@ export default function Home() {
   const [generatedMessage, setGeneratedMessage] = useState('');
   const [manualUser, setManualUser] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const templateInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const generateMessage = useCallback(() => {
@@ -54,7 +55,7 @@ export default function Home() {
         let firstColumnData: string[] = [];
         
         try {
-          const workbook = XLSX.read(data, { type: 'array' });
+          const workbook = XLSX.read(data, { type: 'binary' });
           const sheetName = workbook.SheetNames[0];
           const worksheet = workbook.Sheets[sheetName];
           const json: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
@@ -92,7 +93,7 @@ export default function Home() {
           });
         }
       };
-      reader.readAsArrayBuffer(file);
+      reader.readAsBinaryString(file);
     }
   };
   
@@ -121,32 +122,18 @@ export default function Home() {
     });
   };
 
-  const handleLoadTemplateClick = () => {
-    templateInputRef.current?.click();
-  };
-  
-  const handleTemplateFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && file.name.endsWith('.txt')) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const content = e.target?.result as string;
-        setBaseMessage(content);
-        toast({
-          variant: 'custom',
-          title: 'Template Loaded',
-          description: 'Your message template has been loaded.',
-        });
-      };
-      reader.readAsText(file);
-    } else {
+  const handleTemplateChange = (templateName: string) => {
+    const template = templates.find(t => t.name === templateName);
+    if (template) {
+      setBaseMessage(template.content);
       toast({
-        title: 'Invalid File Type',
-        description: 'Please upload a .txt file.',
-        variant: 'destructive',
+        variant: 'custom',
+        title: 'Template Loaded',
+        description: `The "${templateName}" template has been loaded.`,
       });
     }
   };
+
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
@@ -213,19 +200,19 @@ export default function Home() {
               />
             </div>
              <div className="flex gap-2">
-               <input
-                 type="file"
-                 ref={templateInputRef}
-                 onChange={handleTemplateFileChange}
-                 accept=".txt"
-                 className="hidden"
-               />
                <Button onClick={handleSaveTemplate} variant="secondary" className="w-full">
-                 <Save className="mr-2 h-4 w-4" /> Save Template
+                 <Save className="mr-2 h-4 w-4" /> Save as New
                </Button>
-               <Button onClick={handleLoadTemplateClick} variant="secondary" className="w-full">
-                 <FolderOpen className="mr-2 h-4 w-4" /> Load Template
-               </Button>
+               <Select onValueChange={handleTemplateChange}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Load a Template" />
+                </SelectTrigger>
+                <SelectContent>
+                  {templates.map(template => (
+                    <SelectItem key={template.name} value={template.name}>{template.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
              </div>
             <div className="space-y-2">
               <Label htmlFor="keyword">Placeholder Keyword</Label>
@@ -318,5 +305,3 @@ export default function Home() {
     </main>
   );
 }
-
-    
