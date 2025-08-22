@@ -192,7 +192,7 @@ export default function Home() {
                  accept=".csv,.xlsx,.xls"
                  className="hidden"
                />
-               <Button onClick={handleUploadClick} variant="outline" className="w-full">
+               <Button onClick={handleUploadClick} variant="outline" className="w-full btn-nav-hover border-2 border-transparent">
                  <Upload className="mr-2 h-4 w-4" />
                  Upload .csv or .xlsx File
                </Button>
