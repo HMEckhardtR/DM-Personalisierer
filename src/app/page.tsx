@@ -15,7 +15,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Upload, ArrowLeft, ArrowRight, Copy, FileText, Save, FolderOpen } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
 import * as XLSX from 'xlsx';
 
 export default function Home() {
@@ -67,21 +66,14 @@ export default function Home() {
         let firstColumnData: string[] = [];
         
         try {
-          if (isXlsx) {
-            const workbook = XLSX.read(data, { type: 'array' });
-            const sheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[sheetName];
-            const json: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-            firstColumnData = json.map(row => String(row[0])).filter(String);
-          } else { // CSV
-            let text = data as string;
-            // Handle UTF-8 BOM
-            if (text.charCodeAt(0) === 0xFEFF) {
-              text = text.substring(1);
-            }
-            const rows = text.split('\n').filter(row => row.trim() !== '');
-            firstColumnData = rows.map(row => row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)[0].trim().replace(/^"|"$/g, '')).filter(Boolean);
-          }
+          const workbook = XLSX.read(data, { type: 'array', codepage: 65001 }); // 65001 is UTF-8
+          const sheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[sheetName];
+          const json: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+          
+          firstColumnData = json
+            .map(row => String(row[0] || ''))
+            .filter(value => value.trim() !== '');
 
           if (firstColumnData.length === 0) {
             toast({
@@ -110,12 +102,8 @@ export default function Home() {
           });
         }
       };
-
-      if (isXlsx) {
-        reader.readAsArrayBuffer(file);
-      } else {
-        reader.readAsText(file, 'UTF-8');
-      }
+      // Read both CSV and XLSX as ArrayBuffer
+      reader.readAsArrayBuffer(file);
     }
   };
   
