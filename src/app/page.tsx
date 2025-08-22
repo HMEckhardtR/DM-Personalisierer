@@ -20,6 +20,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { templates } from '@/templates';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
+import { ModeToggle } from "@/components/mode-toggle";
 
 
 export default function Home() {
@@ -217,11 +218,14 @@ export default function Home() {
     <>
       <main className="container mx-auto p-4 md:p-8">
         <Card className="max-w-5xl mx-auto shadow-lg">
-          <CardHeader>
-            <CardTitle className="text-2xl md:text-3xl font-headline tracking-tight">Patreon DM Generator</CardTitle>
-            <CardDescription>
-              Easily generate personalized direct messages for your patrons from a CSV or XLSX file.
-            </CardDescription>
+          <CardHeader className="flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-2xl md:text-3xl font-headline tracking-tight">Patreon DM Generator</CardTitle>
+              <CardDescription>
+                Easily generate personalized direct messages for your patrons from a CSV or XLSX file.
+              </CardDescription>
+            </div>
+            <ModeToggle />
           </CardHeader>
           <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="flex flex-col gap-6">
@@ -305,7 +309,7 @@ export default function Home() {
                     <CardHeader>
                       <CardDescription className="flex items-center gap-2">
                         Showing message for:
-                        <span className="font-semibold text-primary bg-[#191919] rounded-md px-2 py-1 truncate">{displayUser}</span>
+                        <span className="font-semibold text-primary bg-accent text-accent-foreground rounded-md px-2 py-1 truncate">{displayUser}</span>
                         <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={handleCopyUser}>
                           <Copy className="h-4 w-4"/>
                         </Button>
