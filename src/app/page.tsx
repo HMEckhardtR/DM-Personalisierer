@@ -89,7 +89,7 @@ export default function Home() {
 
           setCsvData(allRows);
           setFileName(file.name);
-          setCurrentIndex(allRows.length > 1 ? 1 : 0);
+          setCurrentIndex(0);
           setManualUser('');
           toast({
             variant: 'custom',
@@ -309,7 +309,7 @@ export default function Home() {
                     <CardHeader>
                       <CardDescription className="flex items-center gap-2">
                         Showing message for:
-                        <span className="font-semibold text-primary bg-accent text-accent-foreground rounded-md px-2 py-1 truncate">{displayUser}</span>
+                        <span className="font-semibold text-primary bg-accent text-accent-foreground dark:text-[#191919] rounded-md px-2 py-1 truncate">{displayUser}</span>
                         <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={handleCopyUser}>
                           <Copy className="h-4 w-4"/>
                         </Button>
