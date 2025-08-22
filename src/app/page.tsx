@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, ArrowLeft, ArrowRight, Copy, FileText, Save } from 'lucide-react';
+import { Upload, ArrowLeft, ArrowRight, Copy, FileText, Save, Trash2 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { templates } from '@/templates';
@@ -181,6 +181,19 @@ export default function Home() {
     }
   };
   
+  const handleClearFile = () => {
+    setCsvData([]);
+    setFileName(null);
+    setCurrentIndex(0);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    toast({
+      title: 'File Cleared',
+      description: 'The patron list has been removed.',
+    });
+  };
+
   const currentUserFromFile = csvData.length > 0 ? csvData[currentIndex] : '';
   const displayUser = manualUser.trim() || currentUserFromFile;
   const isManualMode = !!manualUser.trim();
@@ -247,9 +260,14 @@ export default function Home() {
                    Upload .csv or .xlsx File
                  </Button>
                   {fileName && (
-                    <div className="text-sm text-muted-foreground flex items-center justify-center p-2 bg-muted/50 rounded-md">
-                      <FileText className="mr-2 h-4 w-4 shrink-0" />
-                      <span className="truncate">{fileName}</span>
+                    <div className="text-sm text-muted-foreground flex items-center justify-between p-2 bg-muted/50 rounded-md">
+                      <div className="flex items-center gap-2 truncate">
+                        <FileText className="h-4 w-4 shrink-0" />
+                        <span className="truncate">{fileName}</span>
+                      </div>
+                      <Button onClick={handleClearFile} variant="ghost" size="icon" className="h-6 w-6 shrink-0">
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
                     </div>
                   )}
                </div>
@@ -349,5 +367,3 @@ export default function Home() {
     </>
   );
 }
-
-    
