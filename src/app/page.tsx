@@ -203,7 +203,7 @@ export default function Home() {
       <main className="container mx-auto p-4 md:p-8">
         <Card className="max-w-5xl mx-auto shadow-lg">
           <CardHeader>
-            <CardTitle className="text-3xl font-headline tracking-tight">Patreon DM Generator</CardTitle>
+            <CardTitle className="text-2xl md:text-3xl font-headline tracking-tight">Patreon DM Generator</CardTitle>
             <CardDescription>
               Easily generate personalized direct messages for your patrons from a CSV or XLSX file.
             </CardDescription>
@@ -222,7 +222,7 @@ export default function Home() {
                   className="resize-none"
                 />
               </div>
-               <div className="flex gap-2">
+               <div className="flex flex-col sm:flex-row gap-2">
                  <Button onClick={handleOpenSaveDialog} variant="outline" className="w-full btn-nav-hover border-2 border-transparent">
                    <Save className="mr-2 h-4 w-4" /> Save as New
                  </Button>
@@ -257,7 +257,8 @@ export default function Home() {
                  />
                  <Button onClick={handleUploadClick} variant="outline" className="w-full btn-nav-hover border-2 border-transparent">
                    <Upload className="mr-2 h-4 w-4" />
-                   Upload .csv or .xlsx File
+                   <span className="sm:hidden">Upload File</span>
+                   <span className="hidden sm:inline">Upload .csv or .xlsx File</span>
                  </Button>
                   {fileName && (
                     <div className="text-sm text-muted-foreground flex items-center justify-between p-2 bg-muted/50 rounded-md">
@@ -288,9 +289,9 @@ export default function Home() {
                   <Card className="bg-muted/30">
                     <CardHeader>
                       <CardDescription className="flex items-center gap-2">
-                        Showing message for:{' '}
-                        <span className="font-semibold text-primary bg-[#191919] rounded-md px-2 py-1">{displayUser}</span>
-                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={handleCopyUser}>
+                        Showing message for:
+                        <span className="font-semibold text-primary bg-[#191919] rounded-md px-2 py-1 truncate">{displayUser}</span>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={handleCopyUser}>
                           <Copy className="h-4 w-4"/>
                         </Button>
                         {!isManualMode && csvData.length > 0 && (
@@ -299,24 +300,27 @@ export default function Home() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="p-4 rounded-md bg-background min-h-[120px] text-sm whitespace-pre-wrap">
+                      <div className="p-4 rounded-md bg-background min-h-[120px] text-sm whitespace-pre-wrap overflow-x-auto">
                         {generatedMessage}
                       </div>
                     </CardContent>
-                    <CardFooter className="flex justify-between items-center">
-                      <div className="flex gap-2">
-                         <Button onClick={handlePrevious} disabled={currentIndex === 0 || isManualMode} variant="secondary" className="btn-nav-hover border-2 border-transparent">
+                    <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-2">
+                      <div className="flex gap-2 w-full sm:w-auto">
+                         <Button onClick={handlePrevious} disabled={currentIndex === 0 || isManualMode} variant="secondary" className="w-full btn-nav-hover border-2 border-transparent">
                           <ArrowLeft />
-                          Previous
+                          <span className="sm:hidden">Prev</span>
+                          <span className="hidden sm:inline">Previous</span>
                         </Button>
-                        <Button onClick={handleNext} disabled={currentIndex === csvData.length - 1 || isManualMode} variant="secondary" className="btn-nav-hover border-2 border-transparent">
-                          Next
+                        <Button onClick={handleNext} disabled={currentIndex === csvData.length - 1 || isManualMode} variant="secondary" className="w-full btn-nav-hover border-2 border-transparent">
+                           <span className="sm:hidden">Next</span>
+                           <span className="hidden sm:inline">Next</span>
                           <ArrowRight />
                         </Button>
                       </div>
-                      <Button onClick={handleCopyMessage} disabled={!generatedMessage} className="btn-copy-hover border-2 border-transparent">
+                      <Button onClick={handleCopyMessage} disabled={!generatedMessage} className="w-full sm:w-auto btn-copy-hover border-2 border-transparent">
                         <Copy />
-                        Copy Message
+                        <span className="sm:hidden">Copy</span>
+                        <span className="hidden sm:inline">Copy Message</span>
                       </Button>
                     </CardFooter>
                   </Card>
@@ -333,7 +337,7 @@ export default function Home() {
       </main>
 
       <Dialog open={isSaveDialogOpen} onOpenChange={setIsSaveDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Save Template</DialogTitle>
           </DialogHeader>
