@@ -52,36 +52,37 @@ export default function Home() {
       const reader = new FileReader();
       reader.onload = (e) => {
         const data = e.target?.result;
-        let firstColumnData: string[] = [];
+        let allRows: string[] = [];
         
         try {
           const workbook = XLSX.read(data, { type: 'binary' });
           const sheetName = workbook.SheetNames[0];
           const worksheet = workbook.Sheets[sheetName];
+          // sheet_to_json will handle CSV/XLSX parsing and encoding issues.
           const json: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
           
-          firstColumnData = json
-            .slice(1) // Skip header row
+          allRows = json
             .map(row => String(row[0] || ''))
             .filter(value => value.trim() !== '');
 
-          if (firstColumnData.length === 0) {
+          if (allRows.length === 0) {
             toast({
-              title: 'Empty or Invalid File',
-              description: 'The file is empty or could not be parsed. Please ensure it has content in the first column starting from the second row.',
+              title: 'Empty File',
+              description: 'The uploaded file is empty or could not be parsed.',
               variant: 'destructive',
             });
             return;
           }
 
-          setCsvData(firstColumnData);
+          setCsvData(allRows);
           setFileName(file.name);
-          setCurrentIndex(0);
+          // Start at index 1 if there's more than one row, otherwise start at 0.
+          setCurrentIndex(allRows.length > 1 ? 1 : 0);
           setManualUser('');
           toast({
             variant: 'custom',
             title: 'File Uploaded Successfully',
-            description: `${firstColumnData.length} users found in ${file.name}.`,
+            description: `${allRows.length} rows found in ${file.name}.`,
           });
 
         } catch (error) {
@@ -93,7 +94,8 @@ export default function Home() {
           });
         }
       };
-      reader.readAsBinaryString(file);
+      // Use readAsArrayBuffer for better compatibility with xlsx library
+      reader.readAsArrayBuffer(file);
     }
   };
   
