@@ -60,13 +60,14 @@ export default function Home() {
           const json: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
           
           firstColumnData = json
+            .slice(1) // Skip header row
             .map(row => String(row[0] || ''))
             .filter(value => value.trim() !== '');
 
           if (firstColumnData.length === 0) {
             toast({
               title: 'Empty or Invalid File',
-              description: 'The file is empty or could not be parsed. Please ensure it has content in the first column.',
+              description: 'The file is empty or could not be parsed. Please ensure it has content in the first column starting from the second row.',
               variant: 'destructive',
             });
             return;
@@ -137,7 +138,7 @@ export default function Home() {
           description: 'Your message template has been loaded.',
         });
       };
-      reader.readAsText(file, 'UTF-8');
+      reader.readAsText(file);
     } else {
       toast({
         title: 'Invalid File Type',
@@ -317,3 +318,5 @@ export default function Home() {
     </main>
   );
 }
+
+    
