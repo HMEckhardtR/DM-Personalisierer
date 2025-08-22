@@ -19,6 +19,7 @@ import * as XLSX from 'xlsx';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { templates } from '@/templates';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
+import { Checkbox } from '@/components/ui/checkbox';
 
 
 export default function Home() {
@@ -31,12 +32,20 @@ export default function Home() {
   const [manualUser, setManualUser] = useState('');
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState('');
+  const [truncateAtComma, setTruncateAtComma] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const generateMessage = useCallback(() => {
-    const userToDisplay = manualUser.trim() || (csvData.length > 0 ? csvData[currentIndex] : '');
+    let userToDisplay = manualUser.trim() || (csvData.length > 0 ? csvData[currentIndex] : '');
     
+    if (truncateAtComma && !manualUser.trim()) {
+        const commaIndex = userToDisplay.indexOf(',');
+        if (commaIndex !== -1) {
+            userToDisplay = userToDisplay.substring(0, commaIndex);
+        }
+    }
+
     if (userToDisplay) {
       const keywordToReplace = keyword.trim() || '@user';
       const newGeneratedMessage = baseMessage.replace(new RegExp(keywordToReplace, 'g'), userToDisplay);
@@ -44,7 +53,7 @@ export default function Home() {
     } else {
       setGeneratedMessage('');
     }
-  }, [baseMessage, keyword, csvData, currentIndex, manualUser]);
+  }, [baseMessage, keyword, csvData, currentIndex, manualUser, truncateAtComma]);
 
   useEffect(() => {
     generateMessage();
@@ -195,7 +204,13 @@ export default function Home() {
   };
 
   const currentUserFromFile = csvData.length > 0 ? csvData[currentIndex] : '';
-  const displayUser = manualUser.trim() || currentUserFromFile;
+  let displayUser = manualUser.trim() || currentUserFromFile;
+    if (truncateAtComma && !manualUser.trim()) {
+        const commaIndex = displayUser.indexOf(',');
+        if (commaIndex !== -1) {
+            displayUser = displayUser.substring(0, commaIndex);
+        }
+    }
   const isManualMode = !!manualUser.trim();
 
   return (
@@ -285,7 +300,7 @@ export default function Home() {
                 />
               </div>
               {csvData.length > 0 || isManualMode ? (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   <Card className="bg-muted/30">
                     <CardHeader>
                       <CardDescription className="flex items-center gap-2">
@@ -324,6 +339,21 @@ export default function Home() {
                       </Button>
                     </CardFooter>
                   </Card>
+                   {!isManualMode && csvData.length > 0 && (
+                      <div className="flex items-center space-x-2 pl-1">
+                        <Checkbox
+                          id="truncate"
+                          checked={truncateAtComma}
+                          onCheckedChange={(checked) => setTruncateAtComma(!!checked)}
+                        />
+                        <label
+                          htmlFor="truncate"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Extract name from first part of cell (split by comma)
+                        </label>
+                      </div>
+                    )}
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg h-full">
