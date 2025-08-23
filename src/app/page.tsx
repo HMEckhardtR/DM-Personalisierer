@@ -326,21 +326,21 @@ export default function Home() {
                         {generatedMessage}
                       </div>
                     </CardContent>
-                    <CardFooter className="flex justify-center gap-2">
-                      <div className="flex-1 flex justify-center gap-2">
-                        <Button onClick={handlePrevious} disabled={(currentIndex === 0 && csvData.length <= 1) || isManualMode} variant="secondary" className="flex-1 max-w-[150px] btn-nav-hover border-2 border-transparent">
-                          <ArrowLeft />
-                          <span className="hidden sm:inline">Previous</span>
+                    <CardFooter className="flex flex-col gap-2">
+                        <div className="flex w-full gap-2">
+                            <Button onClick={handlePrevious} disabled={(currentIndex === 0 && csvData.length <= 1) || isManualMode} variant="secondary" className="flex-1 btn-nav-hover border-2 border-transparent">
+                                <ArrowLeft />
+                                <span>Previous</span>
+                            </Button>
+                            <Button onClick={handleNext} disabled={currentIndex === csvData.length - 1 || isManualMode} variant="secondary" className="flex-1 btn-nav-hover border-2 border-transparent">
+                                <span>Next</span>
+                                <ArrowRight />
+                            </Button>
+                        </div>
+                        <Button onClick={handleCopyMessage} disabled={!generatedMessage} className="w-full btn-copy-hover border-2 border-transparent">
+                            <Copy />
+                            <span>Copy Message</span>
                         </Button>
-                        <Button onClick={handleNext} disabled={currentIndex === csvData.length - 1 || isManualMode} variant="secondary" className="flex-1 max-w-[150px] btn-nav-hover border-2 border-transparent">
-                          <span className="hidden sm:inline">Next</span>
-                          <ArrowRight />
-                        </Button>
-                      </div>
-                      <Button onClick={handleCopyMessage} disabled={!generatedMessage} className="flex-1 max-w-[180px] btn-copy-hover border-2 border-transparent">
-                        <Copy />
-                        <span className="hidden sm:inline">Copy Message</span>
-                      </Button>
                     </CardFooter>
                   </Card>
                    {!isManualMode && csvData.length > 0 && (
