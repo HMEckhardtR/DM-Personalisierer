@@ -308,8 +308,9 @@ export default function Home() {
                   <Card className="bg-muted/30">
                     <CardHeader>
                       <CardDescription className="flex flex-col items-center gap-2">
-                         <span className="text-center">Showing message for:</span>
+                         <span className="text-center md:hidden">Showing message for:</span>
                         <div className="flex items-center gap-2">
+                           <span className="hidden md:inline">Showing message for:</span>
                             <span className="font-semibold text-primary bg-accent text-accent-foreground dark:text-[#191919] rounded-md px-2 py-1 truncate">{displayUser}</span>
                             <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={handleCopyUser}>
                               <Copy className="h-4 w-4"/>
@@ -325,18 +326,18 @@ export default function Home() {
                         {generatedMessage}
                       </div>
                     </CardContent>
-                    <CardFooter className="flex flex-wrap justify-between items-center gap-2">
-                      <div className="flex gap-2">
-                        <Button onClick={handlePrevious} disabled={(currentIndex === 0 && csvData.length <= 1) || isManualMode} variant="secondary" className="btn-nav-hover border-2 border-transparent">
+                    <CardFooter className="flex justify-center gap-2">
+                      <div className="flex-1 flex justify-center gap-2">
+                        <Button onClick={handlePrevious} disabled={(currentIndex === 0 && csvData.length <= 1) || isManualMode} variant="secondary" className="flex-1 max-w-[150px] btn-nav-hover border-2 border-transparent">
                           <ArrowLeft />
                           <span className="hidden sm:inline">Previous</span>
                         </Button>
-                        <Button onClick={handleNext} disabled={currentIndex === csvData.length - 1 || isManualMode} variant="secondary" className="btn-nav-hover border-2 border-transparent">
+                        <Button onClick={handleNext} disabled={currentIndex === csvData.length - 1 || isManualMode} variant="secondary" className="flex-1 max-w-[150px] btn-nav-hover border-2 border-transparent">
                           <span className="hidden sm:inline">Next</span>
                           <ArrowRight />
                         </Button>
                       </div>
-                      <Button onClick={handleCopyMessage} disabled={!generatedMessage} className="btn-copy-hover border-2 border-transparent">
+                      <Button onClick={handleCopyMessage} disabled={!generatedMessage} className="flex-1 max-w-[180px] btn-copy-hover border-2 border-transparent">
                         <Copy />
                         <span className="hidden sm:inline">Copy Message</span>
                       </Button>
