@@ -75,14 +75,13 @@ export default function Home() {
           const json: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
           
           allRows = json
-            .slice(1) // Start from the second row (A2)
             .map(row => String(row[0] || ''))
             .filter(value => value.trim() !== '');
 
           if (allRows.length === 0) {
             toast({
-              title: 'Empty File or No Data',
-              description: 'The file is empty or data starts after A2. Please check your file.',
+              title: 'Empty File',
+              description: 'The uploaded file is empty or has no data in the first column.',
               variant: 'destructive',
             });
             return;
@@ -90,7 +89,7 @@ export default function Home() {
 
           setCsvData(allRows);
           setFileName(file.name);
-          setCurrentIndex(0);
+          setCurrentIndex(allRows.length > 1 ? 1 : 0);
           setManualUser('');
           toast({
             variant: 'custom',
@@ -326,7 +325,7 @@ export default function Home() {
                     </CardContent>
                     <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-2">
                       <div className="flex gap-2 w-full sm:w-auto">
-                         <Button onClick={handlePrevious} disabled={currentIndex === 0 || isManualMode} variant="secondary" className="w-full btn-nav-hover border-2 border-transparent">
+                         <Button onClick={handlePrevious} disabled={(currentIndex === 0 && csvData.length <= 1) || isManualMode} variant="secondary" className="w-full btn-nav-hover border-2 border-transparent">
                           <ArrowLeft />
                           <span className="sm:hidden">Prev</span>
                           <span className="hidden sm:inline">Previous</span>
