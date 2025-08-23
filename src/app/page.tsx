@@ -325,22 +325,19 @@ export default function Home() {
                         {generatedMessage}
                       </div>
                     </CardContent>
-                    <CardFooter className="flex flex-wrap justify-center sm:justify-between items-center gap-2">
-                      <div className="flex gap-2 w-full sm:w-auto">
-                         <Button onClick={handlePrevious} disabled={(currentIndex === 0 && csvData.length <= 1) || isManualMode} variant="secondary" className="w-full btn-nav-hover border-2 border-transparent">
+                    <CardFooter className="flex flex-wrap justify-between items-center gap-2">
+                      <div className="flex gap-2">
+                        <Button onClick={handlePrevious} disabled={(currentIndex === 0 && csvData.length <= 1) || isManualMode} variant="secondary" className="btn-nav-hover border-2 border-transparent">
                           <ArrowLeft />
-                          <span className="sm:hidden">Prev</span>
                           <span className="hidden sm:inline">Previous</span>
                         </Button>
-                        <Button onClick={handleNext} disabled={currentIndex === csvData.length - 1 || isManualMode} variant="secondary" className="w-full btn-nav-hover border-2 border-transparent">
-                           <span className="sm:hidden">Next</span>
-                           <span className="hidden sm:inline">Next</span>
+                        <Button onClick={handleNext} disabled={currentIndex === csvData.length - 1 || isManualMode} variant="secondary" className="btn-nav-hover border-2 border-transparent">
+                          <span className="hidden sm:inline">Next</span>
                           <ArrowRight />
                         </Button>
                       </div>
-                      <Button onClick={handleCopyMessage} disabled={!generatedMessage} className="w-full sm:w-auto btn-copy-hover border-2 border-transparent">
+                      <Button onClick={handleCopyMessage} disabled={!generatedMessage} className="btn-copy-hover border-2 border-transparent">
                         <Copy />
-                        <span className="sm:hidden">Copy</span>
                         <span className="hidden sm:inline">Copy Message</span>
                       </Button>
                     </CardFooter>
