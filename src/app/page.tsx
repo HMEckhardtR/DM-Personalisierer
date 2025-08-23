@@ -325,7 +325,7 @@ export default function Home() {
                         {generatedMessage}
                       </div>
                     </CardContent>
-                    <CardFooter className="flex flex-col sm:flex-row justify-between items-center gap-2">
+                    <CardFooter className="flex flex-wrap justify-center sm:justify-between items-center gap-2">
                       <div className="flex gap-2 w-full sm:w-auto">
                          <Button onClick={handlePrevious} disabled={(currentIndex === 0 && csvData.length <= 1) || isManualMode} variant="secondary" className="w-full btn-nav-hover border-2 border-transparent">
                           <ArrowLeft />
