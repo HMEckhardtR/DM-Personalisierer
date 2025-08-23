@@ -287,7 +287,7 @@ export default function Home() {
                      <SelectItem value="load-from-file">
                        <div className="flex items-center gap-2">
                          <FileUp className="h-4 w-4" />
-                         <span>Cargar archivo...</span>
+                         <span>Load txt</span>
                        </div>
                      </SelectItem>
                     <SelectSeparator />
@@ -376,7 +376,7 @@ export default function Home() {
                     </CardContent>
                     <CardFooter className="flex flex-col gap-2">
                         <div className="flex w-full gap-2">
-                            <Button onClick={handlePrevious} disabled={(currentIndex === 0 && csvData.length <= 1) || isManualMode} variant="secondary" className="flex-1 btn-nav-hover border-2 border-transparent">
+                            <Button onClick={handlePrevious} disabled={isManualMode} variant="secondary" className="flex-1 btn-nav-hover border-2 border-transparent">
                                 <ArrowLeft />
                                 <span>Previous</span>
                             </Button>
@@ -453,5 +453,3 @@ export default function Home() {
     </>
   );
 }
-
-    
