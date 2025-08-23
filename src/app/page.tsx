@@ -14,9 +14,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Upload, ArrowLeft, ArrowRight, Copy, FileText, Save, Trash2 } from 'lucide-react';
+import { Upload, ArrowLeft, ArrowRight, Copy, FileText, Save, Trash2, FileUp } from 'lucide-react';
 import * as XLSX from 'xlsx';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { templates } from '@/templates';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -35,6 +35,7 @@ export default function Home() {
   const [newTemplateName, setNewTemplateName] = useState('');
   const [truncateAtComma, setTruncateAtComma] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const templateFileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const generateMessage = useCallback(() => {
@@ -109,6 +110,35 @@ export default function Home() {
       reader.readAsArrayBuffer(file);
     }
   };
+
+  const handleTemplateFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.type !== 'text/plain') {
+        toast({
+          title: 'Invalid File Type',
+          description: 'Please upload a .txt file.',
+          variant: 'destructive',
+        });
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const content = e.target?.result as string;
+        setBaseMessage(content);
+        toast({
+          variant: 'custom',
+          title: 'Template Loaded',
+          description: `Loaded content from ${file.name}.`,
+        });
+      };
+      reader.readAsText(file);
+    }
+    // Reset the file input so the same file can be loaded again
+    if (templateFileInputRef.current) {
+      templateFileInputRef.current.value = '';
+    }
+  };
   
   const handleOpenSaveDialog = () => {
     if (!baseMessage.trim()) {
@@ -143,6 +173,10 @@ export default function Home() {
   };
 
   const handleTemplateChange = (templateName: string) => {
+    if (templateName === 'load-from-file') {
+      templateFileInputRef.current?.click();
+      return;
+    }
     const template = templates.find(t => t.name === templateName);
     if (template) {
       setBaseMessage(template.content);
@@ -250,6 +284,13 @@ export default function Home() {
                     <SelectValue placeholder="Load a Template" />
                   </SelectTrigger>
                   <SelectContent>
+                     <SelectItem value="load-from-file">
+                       <div className="flex items-center gap-2">
+                         <FileUp className="h-4 w-4" />
+                         <span>Cargar archivo...</span>
+                       </div>
+                     </SelectItem>
+                    <SelectSeparator />
                     {templates.map(template => (
                       <SelectItem key={template.name} value={template.name}>{template.name}</SelectItem>
                     ))}
@@ -272,6 +313,13 @@ export default function Home() {
                    ref={fileInputRef}
                    onChange={handleFileChange}
                    accept=".csv,.xlsx"
+                   className="hidden"
+                 />
+                 <input
+                   type="file"
+                   ref={templateFileInputRef}
+                   onChange={handleTemplateFileChange}
+                   accept=".txt"
                    className="hidden"
                  />
                  <Button onClick={handleUploadClick} variant="outline" className="w-full btn-nav-hover border-2 border-transparent">
@@ -405,3 +453,5 @@ export default function Home() {
     </>
   );
 }
+
+    
