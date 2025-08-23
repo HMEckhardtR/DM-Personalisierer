@@ -307,8 +307,8 @@ export default function Home() {
                 <div className="space-y-4">
                   <Card className="bg-muted/30">
                     <CardHeader>
-                      <CardDescription className="flex flex-col sm:flex-row items-center sm:items-baseline gap-2">
-                        <span className="sm:inline text-center mb-1 sm:mb-0">Showing message for:</span>
+                      <CardDescription className="flex flex-col items-center gap-2">
+                         <span className="text-center">Showing message for:</span>
                         <div className="flex items-center gap-2">
                             <span className="font-semibold text-primary bg-accent text-accent-foreground dark:text-[#191919] rounded-md px-2 py-1 truncate">{displayUser}</span>
                             <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={handleCopyUser}>
@@ -316,7 +316,7 @@ export default function Home() {
                             </Button>
                         </div>
                         {!isManualMode && csvData.length > 0 && (
-                          <span className="text-muted-foreground sm:ml-auto">({currentIndex + 1}/{csvData.length})</span>
+                          <span className="text-muted-foreground">({currentIndex + 1}/{csvData.length})</span>
                         )}
                       </CardDescription>
                     </CardHeader>
