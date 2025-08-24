@@ -27,6 +27,7 @@ export default function Home() {
   const [baseMessage, setBaseMessage] = useState('Hi @user, thanks so much for your support! I really appreciate it.');
   const [keyword, setKeyword] = useState('@user');
   const [keylink, setKeylink] = useState('@link');
+  const [linkUrl, setLinkUrl] = useState('');
   const [csvData, setCsvData] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -49,14 +50,22 @@ export default function Home() {
         }
     }
 
+    let tempMessage = baseMessage;
+    const keywordToReplace = keyword.trim() || '@user';
+    const keylinkToReplace = keylink.trim() || '@link';
+
     if (userToDisplay) {
-      const keywordToReplace = keyword.trim() || '@user';
-      const newGeneratedMessage = baseMessage.replace(new RegExp(keywordToReplace, 'g'), userToDisplay);
-      setGeneratedMessage(newGeneratedMessage);
-    } else {
-      setGeneratedMessage('');
+      tempMessage = tempMessage.replace(new RegExp(keywordToReplace, 'g'), userToDisplay);
     }
-  }, [baseMessage, keyword, csvData, currentIndex, manualUser, truncateAtComma]);
+    
+    if (linkUrl.trim()) {
+      tempMessage = tempMessage.replace(new RegExp(keylinkToReplace, 'g'), linkUrl.trim());
+    }
+
+    setGeneratedMessage(tempMessage);
+
+  }, [baseMessage, keyword, keylink, linkUrl, csvData, currentIndex, manualUser, truncateAtComma]);
+
 
   useEffect(() => {
     generateMessage();
@@ -266,7 +275,7 @@ export default function Home() {
             <div className="flex flex-col gap-6">
               <h3 className="text-xl font-semibold text-foreground/90 border-b pb-2">1. Configure Your Message</h3>
               <div className="space-y-2">
-                <Label htmlFor="base-message">Message Template</Label>
+                <Label htmlFor="base-message">Message Template:</Label>
                 <Textarea
                   id="base-message"
                   value={baseMessage}
@@ -299,7 +308,7 @@ export default function Home() {
                 </Select>
                </div>
               <div className="space-y-2">
-                <Label htmlFor="keyword">Placeholder Keyword</Label>
+                <Label htmlFor="keyword">Placeholder Keyword:</Label>
                 <Input
                   id="keyword"
                   value={keyword}
@@ -308,12 +317,21 @@ export default function Home() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="keylink">Placeholder Keylink</Label>
+                <Label htmlFor="keylink">Placeholder Keylink:</Label>
                 <Input
                   id="keylink"
                   value={keylink}
                   onChange={(e) => setKeylink(e.target.value)}
                   placeholder="e.g. @link"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="link-url">Link URL:</Label>
+                <Input
+                  id="link-url"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  placeholder="e.g. https://example.com"
                 />
               </div>
                <div className="space-y-3">
@@ -353,7 +371,7 @@ export default function Home() {
             <div className="flex flex-col gap-6">
                <h3 className="text-xl font-semibold text-foreground/90 border-b pb-2">2. Generate & Copy</h3>
               <div className="space-y-2">
-                <Label htmlFor="manual-user">Manual Input (Overrides List)</Label>
+                <Label htmlFor="manual-user">Manual Input (Overrides List):</Label>
                 <Input
                   id="manual-user"
                   value={manualUser}
@@ -436,7 +454,7 @@ export default function Home() {
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="template-name" className="text-right">
-                Name
+                Name:
               </Label>
               <Input
                 id="template-name"
