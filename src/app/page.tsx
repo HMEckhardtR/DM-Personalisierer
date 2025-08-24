@@ -26,6 +26,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 export default function Home() {
   const [baseMessage, setBaseMessage] = useState('Hi @user, thanks so much for your support! I really appreciate it.');
   const [keyword, setKeyword] = useState('@user');
+  const [keylink, setKeylink] = useState('@link');
   const [csvData, setCsvData] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -304,6 +305,15 @@ export default function Home() {
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
                   placeholder="e.g. @user"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="keylink">Placeholder Keylink</Label>
+                <Input
+                  id="keylink"
+                  value={keylink}
+                  onChange={(e) => setKeylink(e.target.value)}
+                  placeholder="e.g. @link"
                 />
               </div>
                <div className="space-y-3">
