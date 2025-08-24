@@ -265,7 +265,7 @@ export default function Home() {
         <Card className="max-w-5xl mx-auto shadow-lg">
           <CardHeader className="flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-2xl md:text-3xl font-headline tracking-tight">Patreon DM Generator</CardTitle>
+              <CardTitle className="text-2xl md:text-3xl font-headline tracking-tight text-[#FB6856]">Patreon DM Generator</CardTitle>
               <CardDescription>
                 Easily generate personalized direct messages for your patrons from a CSV or XLSX file.
               </CardDescription>
