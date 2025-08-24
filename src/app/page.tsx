@@ -36,6 +36,7 @@ export default function Home() {
   const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
   const [newTemplateName, setNewTemplateName] = useState('');
   const [truncateAtComma, setTruncateAtComma] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const templateFileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -316,24 +317,44 @@ export default function Home() {
                   placeholder="e.g. @user"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="keylink">Placeholder Keylink:</Label>
-                <Input
-                  id="keylink"
-                  value={keylink}
-                  onChange={(e) => setKeylink(e.target.value)}
-                  placeholder="e.g. @link"
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="advanced-toggle"
+                  checked={showAdvanced}
+                  onCheckedChange={(checked) => setShowAdvanced(!!checked)}
                 />
+                <label
+                  htmlFor="advanced-toggle"
+                  className="text-sm font-medium leading-none"
+                >
+                  Avanzado
+                </label>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="link-url">Link URL:</Label>
-                <Input
-                  id="link-url"
-                  value={linkUrl}
-                  onChange={(e) => setLinkUrl(e.target.value)}
-                  placeholder="e.g. https://example.com"
-                />
-              </div>
+
+              {showAdvanced && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="keylink">Placeholder Keylink:</Label>
+                    <Input
+                      id="keylink"
+                      value={keylink}
+                      onChange={(e) => setKeylink(e.target.value)}
+                      placeholder="e.g. @link"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="link-url">Link URL:</Label>
+                    <Input
+                      id="link-url"
+                      value={linkUrl}
+                      onChange={(e) => setLinkUrl(e.target.value)}
+                      placeholder="e.g. https://example.com"
+                    />
+                  </div>
+                </>
+              )}
+
                <div className="space-y-3">
                 <Label>Upload Patrons List</Label>
                  <input

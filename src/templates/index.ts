@@ -1,4 +1,4 @@
-const formal = `Hi @user!
+const WithLink = `Hi @user!
 This is the password to unzip "NAME"
 
 xxxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx
@@ -24,10 +24,10 @@ xxxxx-xxxxx-xxxxx-xxxxx-xxxxx-xxxxx
 
 Link: @link
 
-If you have already downloaded the other 3 Backup files, The Mansion 48 and ToE2-4 111, you don't really need to download it.`;
+`;
 
 export const templates = [
-    { name: 'Formal', content: formal },
+    { name: 'WithLink', content: WithLink },
     { name: 'With Out Link', content: WithOutLink },
-    { name: 'Backup21', content: Backup21 },
+    { name: 'Backup v2.1', content: Backup21 },
 ];
