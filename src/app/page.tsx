@@ -224,6 +224,18 @@ export default function Home() {
     }
   };
 
+  const handleCopyAndNext = () => {
+    if (generatedMessage) {
+      navigator.clipboard.writeText(generatedMessage);
+      toast({
+        variant: 'custom',
+        title: 'Copied & Moved to Next!',
+        description: 'The message was copied and you are on the next user.',
+      });
+      handleNext();
+    }
+  };
+
   const handleCopyUser = () => {
     const userToCopy = manualUser.trim() || (csvData.length > 0 ? csvData[currentIndex] : '');
     if (userToCopy) {
@@ -258,6 +270,7 @@ export default function Home() {
         }
     }
   const isManualMode = !!manualUser.trim();
+  const isLastUser = currentIndex === csvData.length - 1;
 
   return (
     <>
@@ -408,7 +421,7 @@ export default function Home() {
                          <span className="text-center md:hidden">Showing message for:</span>
                         <div className="flex items-center gap-2">
                            <span className="hidden md:inline">Showing message for:</span>
-                            <span className="font-semibold text-primary bg-accent text-accent-foreground dark:text-[#191919] rounded-md px-2 py-1 truncate">{displayUser}</span>
+                            <span className="font-semibold text-primary bg-accent text-accent-foreground dark:text-[#131313] rounded-md px-2 py-1 truncate">{displayUser}</span>
                             <Button variant="ghost" size="icon" className="h-6 w-6 shrink-0" onClick={handleCopyUser}>
                               <Copy className="h-4 w-4"/>
                             </Button>
@@ -429,7 +442,10 @@ export default function Home() {
                                 <ArrowLeft />
                                 <span>Previous</span>
                             </Button>
-                            <Button onClick={handleNext} disabled={currentIndex === csvData.length - 1 || isManualMode} variant="secondary" className="flex-1 btn-nav-hover border-2 border-transparent">
+                            <Button onClick={handleCopyAndNext} disabled={isLastUser || isManualMode} variant="secondary" className="flex-1 btn-nav-hover border-2 border-transparent">
+                                <span>Copy & Next</span>
+                            </Button>
+                            <Button onClick={handleNext} disabled={isLastUser || isManualMode} variant="secondary" className="flex-1 btn-nav-hover border-2 border-transparent">
                                 <span>Next</span>
                                 <ArrowRight />
                             </Button>
