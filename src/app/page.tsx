@@ -442,7 +442,7 @@ export default function Home() {
                                 <ArrowLeft />
                                 <span>Previous</span>
                             </Button>
-                            <Button onClick={handleCopyAndNext} disabled={isLastUser || isManualMode} variant="secondary" className="flex-1 btn-nav-hover border-2 border-transparent">
+                            <Button onClick={handleCopyAndNext} disabled={isLastUser || isManualMode} variant="secondary" className="flex-1 hover:border-[#fb6856] border-2 border-transparent">
                                 <span>Copy & Next</span>
                             </Button>
                             <Button onClick={handleNext} disabled={isLastUser || isManualMode} variant="secondary" className="flex-1 btn-nav-hover border-2 border-transparent">
